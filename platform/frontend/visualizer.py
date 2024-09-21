@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import requests
 
 def getRawData():
-    url = "http://localhost:8000/rawdata"
+    url = "http://localhost:8000/summary"
     response = requests.get(url)
     return response
 
@@ -26,7 +26,7 @@ with st.container():
         if st.button("Summarize The Flight 🧑🏻‍✈️", type="primary"):
             res = getRawData()
         else:
-            res = 0
+            res = None
     
     st.markdown(
         """
@@ -48,38 +48,38 @@ with st.container():
                 st.dataframe(df) 
             else:
                 st.markdown("Waiting for data...")
-    with tab2:
-        with st.container():
-            if res != None:
-                df = pd.DataFrame(res.json()['data'])
-                # st.dataframe(df) 
-                # Example DataFrame
-                # Get the count of each unique value in 'ColumnA'
-                value_counts = df['satisfaction'].value_counts()
-                # Count the specific value 'A'
-                count_satisfied = value_counts['satisfied']
-                count_neutral_dissatisfied = value_counts['neutral or dissatisfied']
+    # with tab2:
+    #     with st.container():
+    #         if res != None:
+    #             df = pd.DataFrame(res.json()['data'])
+    #             # st.dataframe(df) 
+    #             # Example DataFrame
+    #             # Get the count of each unique value in 'ColumnA'
+    #             value_counts = df['satisfaction'].value_counts()
+    #             # Count the specific value 'A'
+    #             count_satisfied = value_counts['satisfied']
+    #             count_neutral_dissatisfied = value_counts['neutral or dissatisfied']
                 
-                col1, col2 = st.columns(2)
+    #             col1, col2 = st.columns(2)
                 
-                col1.metric(label="Satisfied", value=f"{count_satisfied} people", delta="+ 😁")
-                col2.metric(label="Neutral or Dissatisfied", value=f"{count_neutral_dissatisfied} people", delta="- 🫤")
-            else:
-                st.markdown("Waiting for data...")
+    #             col1.metric(label="Satisfied", value=f"{count_satisfied} people", delta="+ 😁")
+    #             col2.metric(label="Neutral or Dissatisfied", value=f"{count_neutral_dissatisfied} people", delta="- 🫤")
+    #         else:
+    #             st.markdown("Waiting for data...")
                 
     
-    # with st.container():
-    #     col1, col2, col3 = st.columns(3)
+    # # with st.container():
+    # #     col1, col2, col3 = st.columns(3)
 
-    #     with col1:
-    #         st.header("A cat")
-    #         st.image("https://static.streamlit.io/examples/cat.jpg")
+    # #     with col1:
+    # #         st.header("A cat")
+    # #         st.image("https://static.streamlit.io/examples/cat.jpg")
 
-    #     with col2:
-    #         st.header("A dog")
-    #         st.image("https://static.streamlit.io/examples/dog.jpg")
+    # #     with col2:
+    # #         st.header("A dog")
+    # #         st.image("https://static.streamlit.io/examples/dog.jpg")
         
-    #     with col3:
-    #         st.header("An owl")
-    #         st.image("https://static.streamlit.io/examples/owl.jpg")
+    # #     with col3:
+    # #         st.header("An owl")
+    # #         st.image("https://static.streamlit.io/examples/owl.jpg")
             
