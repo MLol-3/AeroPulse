@@ -26,7 +26,7 @@ with st.container():
         if st.button("Summarize The Flight 🧑🏻‍✈️", type="primary"):
             res = getRawData()
         else:
-            res = None
+            res = 0
     
     st.markdown(
         """
