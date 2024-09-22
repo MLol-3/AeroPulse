@@ -6,6 +6,40 @@ import joblib
 import pandas as pd
 import pickle
 
+def transform_pipeline(df):
+    df = df.drop(["id"], axis=1)
+    encoder = pickle.load(open("../../pipelines/encoder_business.pkl", 'rb'))
+    # encoder = joblib.load('../../pipelines/encoder_business.pkl')
+    scaler = joblib.load('../../pipelines/scaler.pkl')
+    model = joblib.load("../../pipelines/model_KNN_business.pkl")
+    
+    all_encoded = ['Inflight wifi service', 
+                    'Ease of Online booking', 
+                    'Food and drink', 'Online boarding', 
+                    'Seat comfort', 'Inflight entertainment', 
+                    'On-board service', 'Leg room service', 
+                    'Baggage handling', 'Checkin service', 
+                    'Inflight service', 'Cleanliness', 
+                    'Customer Type', 'Type of Travel', 'Class']
+    encoded = encoder.fit_transform(df[all_encoded])
+
+    df_encoded = pd.DataFrame(encoded.toarray(), 
+                            columns=encoder.get_feature_names_out(all_encoded))
+    # encoding
+    df_encoded = df_encoded.astype(int)
+    df_encoded.to_csv("test.csv", index=False)
+    # print(len(list(df_encoded)))
+    # df_encoded = df_encoded[6:]
+    # df_drop_dummy = df[6:].drop(all_encoded, axis=1)
+    # df_final = pd.concat([df_encoded, df_drop_dummy], axis=1)
+    # # standardization
+    # df_scaler = scaler.transform(df_final)
+    # preds = model.predict(df_scaler)
+    # print(preds)
+    
+    # return preds
+
+
 app = FastAPI()
 
 @app.get("/")
@@ -56,42 +90,13 @@ def get_summary():
     
     # Fetch all records from the sheet
     data = sheet.get_all_records()
+    print(data)
     
     df = pd.DataFrame(data)
-    df = df.drop(["id"], axis=1)
-    encoder = joblib.load('./utils/encoder.pkl')
-    scaler = joblib.load('./utils/scaler.pkl')
-    model = joblib.load("./utils/model_lr copy.pkl")
-    model2 = pickle.load(open("./utils/model_lr copy.pkl", "rb"))
+    preds = transform_pipeline(df)
     
-    all_encoded = ['Inflight wifi service', 
-                    'Departure/Arrival time convenient', 
-                    'Ease of Online booking', 'Gate location', 
-                    'Food and drink', 'Online boarding', 'Seat comfort', 
-                    'Inflight entertainment', 'On-board service', 
-                    'Leg room service', 'Baggage handling', 'Checkin service', 
-                    'Inflight service', 'Cleanliness', 'Gender', 'Customer Type', 
-                    'Type of Travel', 'Class']
-    encoded = encoder.fit_transform(df[all_encoded])
-
-    df_encoded = pd.DataFrame(encoded.toarray(), 
-                              columns=encoder.get_feature_names_out(all_encoded))
+    print(df)
     
-    df_encoded.to_csv('encoded.csv', index=False)
-    
-    # encoding
-    df_encoded = df_encoded.astype(int)
-    print(len(list(df_encoded)))
-    df_encoded = df_encoded[6:]
-    df_drop_dummy = df[6:].drop(all_encoded, axis=1)
-    df_final = pd.concat([df_encoded, df_drop_dummy], axis=1)
-    
-    df_final.to_csv('concat.csv', index=False)
-    
-    # standardization
-    df_scaler = scaler.transform(df_final)
-    preds = model2.predict(df_scaler)
-    print(preds)
 
     # Return the data as JSON response
-    return {"data": data}
+    return {"data": df}
